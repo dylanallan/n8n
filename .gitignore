@@ -1,0 +1,19 @@
+# Node
+node_modules/
+.env
+
+# n8n
+.n8n/
+dist/
+
+# Railway
+.railway/
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+.idea
+.vscode
+coverage
+.nyc_output 
