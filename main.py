@@ -10,7 +10,11 @@ from client_manager import ClientManager
 from viral_analyzer import ViralContentAnalyzer
 from config import OUTPUT_DIR, SPREADSHEET_NAME, PLATFORMS
 
-app = FastAPI()
+app = FastAPI(
+    title="Content Scraper API",
+    description="API for scraping and analyzing content across multiple platforms",
+    version="1.0.0"
+)
 
 class ContentAnalyzer:
     def __init__(self):
@@ -282,9 +286,13 @@ class ContentAnalyzer:
         
         return content
 
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the Content Scraper API"}
+
 @app.get("/health")
 async def health_check():
-    return JSONResponse(content={"status": "healthy"})
+    return {"status": "healthy"}
 
 @app.post("/analyze/{client_id}")
 async def analyze_client(client_id: str):
