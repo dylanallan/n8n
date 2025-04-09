@@ -1,12 +1,16 @@
 import os
 from datetime import datetime
 import pandas as pd
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from youtube_scraper import YouTubeScraper
 from instagram_scraper import InstagramScraper
 from tiktok_scraper import TikTokScraper
 from client_manager import ClientManager
 from viral_analyzer import ViralContentAnalyzer
 from config import OUTPUT_DIR, SPREADSHEET_NAME, PLATFORMS
+
+app = FastAPI()
 
 class ContentAnalyzer:
     def __init__(self):
@@ -278,22 +282,20 @@ class ContentAnalyzer:
         
         return content
 
-def main():
-    print("=== Content Analysis Scraper ===")
+@app.get("/health")
+async def health_check():
+    return JSONResponse(content={"status": "healthy"})
+
+@app.post("/analyze/{client_id}")
+async def analyze_client(client_id: str):
     analyzer = ContentAnalyzer()
-    
-    # Select or create client
-    client_id = analyzer.client_manager.select_client()
-    if not client_id:
-        print("Failed to select or create client. Exiting...")
-        return
-    
-    # Analyze content for the client
-    results = analyzer.analyze_niche(client_id)
-    
-    print("\nAnalysis complete! Results have been saved to:")
-    print(f"- Local Excel files in the '{OUTPUT_DIR}' directory")
-    print("- Google Doc (shared with client)")
+    try:
+        analyzer.analyze_niche(client_id)
+        return JSONResponse(content={"status": "success", "message": f"Analysis completed for client {client_id}"})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
-    main() 
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port) 

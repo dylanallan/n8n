@@ -1,28 +1,14 @@
 [build]
 builder = "nixpacks"
-buildCommand = "pnpm install --frozen-lockfile && pnpm build"
+buildCommand = "pip install -r requirements.txt"
 
 [deploy]
-startCommand = "pnpm start"
-healthcheckPath = "/healthz"
+startCommand = "uvicorn main:app --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/health"
 healthcheckTimeout = 100
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
 
 [deploy.env]
-PORT = "5678"
+PORT = "8000"
 NODE_ENV = "production"
-N8N_BASIC_AUTH_ACTIVE = "true"
-N8N_BASIC_AUTH_USER = "${N8N_BASIC_AUTH_USER}"
-N8N_BASIC_AUTH_PASSWORD = "${N8N_BASIC_AUTH_PASSWORD}"
-N8N_USER_MANAGEMENT_DISABLED = "true"
-N8N_PROTOCOL = "https"
-N8N_HOST = "${RAILWAY_STATIC_URL}"
-N8N_ENCRYPTION_KEY = "${N8N_ENCRYPTION_KEY}"
-N8N_EDITOR_BASE_URL = "${RAILWAY_STATIC_URL}"
-DB_TYPE = "postgresdb"
-DB_POSTGRESDB_HOST = "${PGHOST}"
-DB_POSTGRESDB_PORT = "${PGPORT}"
-DB_POSTGRESDB_DATABASE = "${PGDATABASE}"
-DB_POSTGRESDB_USER = "${PGUSER}"
-DB_POSTGRESDB_PASSWORD = "${PGPASSWORD}"
